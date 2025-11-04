@@ -12,7 +12,7 @@ model User {
   name          String
   email         String   @unique
   passwordHash  String
-  role          String   @default("CUSTOMER")  // <- antes enum Role
+  role          String   @default("CUSTOMER")
   orders        Order[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -41,7 +41,7 @@ model Order {
   id         Int       @id @default(autoincrement())
   user       User      @relation(fields: [userId], references: [id])
   userId     Int
-  status     String    @default("CART")       // <- antes enum OrderStatus
+  status     String    @default("CART")
   total      Int       @default(0)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -75,8 +75,9 @@ model Payment {
   order     Order     @relation(fields: [orderId], references: [id])
   orderId   Int       @unique
   amount    Int
-  status    String    @default("PENDING")     // <- antes enum PaymentStatus
+  status    String    @default("PENDING")
   method    String?
   createdAt DateTime  @default(now())
 }
+
 
