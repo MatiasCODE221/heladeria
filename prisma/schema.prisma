@@ -1,18 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
 
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "sqlite" url = env("DATABASE_URL") }
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
 
 model User {
   id            Int      @id @default(autoincrement())
   name          String
   email         String   @unique
   passwordHash  String
-  role          Role     @default(CUSTOMER)
+  role          String   @default("CUSTOMER") // <- antes Role enum
   orders        Order[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
-enum Role { ADMIN CUSTOMER }
 
 model Product {
   id          Int       @id @default(autoincrement())
@@ -27,25 +31,23 @@ model Product {
 }
 
 model Topping {
-  id       Int       @id @default(autoincrement())
-  name     String
-  price    Int
-  items    OrderItemTopping[]
+  id     Int     @id @default(autoincrement())
+  name   String
+  price  Int
+  items  OrderItemTopping[]
 }
 
 model Order {
-  id         Int        @id @default(autoincrement())
-  user       User       @relation(fields: [userId], references: [id])
+  id         Int       @id @default(autoincrement())
+  user       User      @relation(fields: [userId], references: [id])
   userId     Int
-  status     OrderStatus @default(CART)
-  total      Int         @default(0)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  status     String    @default("CART")     // <- antes OrderStatus enum
+  total      Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   items      OrderItem[]
   payment    Payment?
 }
-
-enum OrderStatus { CART PENDING PREPARATION ON_THE_WAY DELIVERED CANCELLED }
 
 model OrderItem {
   id         Int      @id @default(autoincrement())
@@ -61,20 +63,20 @@ model OrderItem {
 }
 
 model OrderItemTopping {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
   orderItemId Int
-  topping     Topping  @relation(fields: [toppingId], references: [id])
+  topping     Topping   @relation(fields: [toppingId], references: [id])
   toppingId   Int
 }
 
 model Payment {
-  id        Int      @id @default(autoincrement())
-  order     Order    @relation(fields: [orderId], references: [id])
-  orderId   Int      @unique
+  id        Int       @id @default(autoincrement())
+  order     Order     @relation(fields: [orderId], references: [id])
+  orderId   Int       @unique
   amount    Int
-  status    PaymentStatus @default(PENDING)
+  status    String    @default("PENDING")   // <- antes PaymentStatus enum
   method    String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
-enum PaymentStatus { PENDING PAID FAILED }
+
